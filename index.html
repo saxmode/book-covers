@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Books Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton:wght@400;700;900&family=Archivo+Black:wght@400;700;900&family=Bebas+Neue:wght@400;700;900&family=Bodoni+Moda:wght@400;700;900&family=Cinzel:wght@400;700;900&family=EB+Garamond:wght@400;700;900&family=Fredericka+the+Great:wght@400;700;900&family=Libre+Caslon+Display:wght@400;700;900&family=Major+Mono+Display:wght@400;700;900&family=Oswald:wght@400;700;900&family=Playfair+Display:wght@400;700;900&family=Rozha+One:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem}
+h1{font-family:"Courier New",monospace;font-size:2rem;color:#8ff0a4;letter-spacing:.05em}
+.subtitle{color:#8b949e;font-size:.95rem;margin-top:.3rem}
+.tabs{display:flex;gap:.5rem;margin:1.5rem 0;border-bottom:1px solid #30363d;padding-bottom:1rem;flex-wrap:wrap}
+.tab-button{padding:.5rem 1rem;background:transparent;border:none;color:#8b949e;cursor:pointer;font-family:"Courier New",monospace;font-size:.9rem;border-bottom:2px solid transparent}
+.tab-button:hover{color:#8ff0a4}.tab-button.active{color:#8ff0a4;border-bottom-color:#8ff0a4}
+.gallery{display:none;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.4rem}
+.gallery.active{display:grid}
+.cover{cursor:pointer;border:1px solid #30363d;border-radius:4px;overflow:hidden;background:#fff;transition:transform .15s,border-color .15s}
+.cover:hover{transform:translateY(-4px);border-color:#8ff0a4}
+.frame{position:relative;aspect-ratio:3/4;background:#fff;container-type:inline-size;overflow:hidden}
+.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;padding:5cqw;mix-blend-mode:var(--t-blend,difference);color:#fff;pointer-events:none}
+.ov-main{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:var(--t-justify,center)}
+.ov-title{font-size:calc(var(--book-size,20) * 1cqw * var(--t-scale,1));text-align:var(--t-align,left);color:var(--t-color,#fff);font-weight:900;line-height:var(--t-lh,.92);text-transform:uppercase;letter-spacing:-.01em;word-break:break-word;hyphens:auto}
+.ov-foot{font-size:4.2cqw;font-weight:700;text-transform:uppercase;letter-spacing:.04em;line-height:1.1;text-align:var(--t-align,left);color:var(--t-color,#fff)}
+/* typography control bar */
+.typo-bar{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:.7rem 1rem;margin-bottom:1.2rem;font-family:"Courier New",monospace;font-size:.78rem}
+.typo-bar .grp{display:flex;gap:.3rem;align-items:center}
+.typo-bar label{color:#8b949e;letter-spacing:.04em;margin-right:.2rem}
+.typo-bar button{background:transparent;border:1px solid #30363d;color:#8b949e;padding:.25rem .55rem;cursor:pointer;border-radius:3px;font-family:inherit;font-size:.75rem}
+.typo-bar button.on{color:#0d1117;background:#8ff0a4;border-color:#8ff0a4}
+.typo-bar select{background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;padding:.25rem;font-family:inherit}
+.typo-bar input[type=range]{accent-color:#8ff0a4;width:120px}
+.typo-bar .sw{width:18px;height:18px;padding:0;border-radius:3px;border:1px solid #30363d;cursor:pointer}
+.typo-bar .sw.on{outline:2px solid #8ff0a4;outline-offset:1px}
+.typo-bar .sw-auto{width:auto;height:auto;padding:.25rem .5rem;background:transparent;color:#8b949e;font-size:.7rem}
+.cap{padding:.5rem .7rem;font-family:"Courier New",monospace;font-size:.7rem;color:#8b949e;background:#161b22}
+.cap b{color:#8ff0a4}
+.showcase-tab.active{display:flex;flex-direction:column;align-items:center;gap:2rem}
+.reel{display:flex;flex-direction:column;gap:.6rem;align-items:center;max-width:560px}
+.reel figcaption{font-family:"Courier New",monospace;font-size:.8rem;color:#8ff0a4;letter-spacing:.04em}
+.reel video{width:100%;border:1px solid #30363d;background:#fff;border-radius:4px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:2rem}
+.modal.active{display:flex}
+.modal-frame{position:relative;height:90vh;aspect-ratio:3/4;background:#fff;container-type:inline-size;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.6)}
+.modal-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.modal-close{position:fixed;top:1.2rem;right:1.5rem;background:rgba(0,0,0,.7);border:1px solid #8ff0a4;color:#8ff0a4;padding:.5rem 1rem;cursor:pointer;font-family:"Courier New",monospace;border-radius:4px;z-index:1001}
+</style></head><body>
+<header><h1>100 BOOKS</h1><p class="subtitle">Covers · title in topic-matched type · difference blend</p></header>
+<div class="tabs"><button class="tab-button active" data-style="single_line">SINGLE LINE</button><button class="tab-button" data-style="topographic">TOPOGRAPHIC</button><button class="tab-button" data-style="constructivist">CONSTRUCTIVIST</button><button class="tab-button" data-style="wireframe">WIREFRAME</button><button class="tab-button" data-style="mitate">MASTERS (MITATE)</button><button class="tab-button" data-style="classic-illustration">CLASSIC ILLUSTRATION</button><button class="tab-button" data-style="contemporary-fantasy-2025">CONTEMPORARY FANTASY</button><button class="tab-button" data-style="photorealistic-sd35">PHOTOREALISTIC</button></div>
+<div class="typo-bar">
+  <div class="grp"><label>SIZE</label><input type="range" id="t-size" min="0.5" max="1.8" step="0.05" value="1"></div>
+  <div class="grp"><label>LINE</label><input type="range" id="t-lh" min="0.7" max="1.5" step="0.02" value="0.92"></div>
+  <div class="grp"><label>POSITION</label>
+    <button data-k="justify" data-v="flex-start">TOP</button>
+    <button data-k="justify" data-v="center">MIDDLE</button>
+    <button data-k="justify" data-v="flex-end">BOTTOM</button></div>
+  <div class="grp"><label>ALIGN</label>
+    <button data-k="align" data-v="left">L</button>
+    <button data-k="align" data-v="center">C</button>
+    <button data-k="align" data-v="right">R</button></div>
+  <div class="grp"><label>BLEND</label>
+    <select id="t-blend">
+      <option>difference</option><option>normal</option><option>multiply</option><option>screen</option>
+      <option>overlay</option><option>darken</option><option>lighten</option><option>exclusion</option>
+      <option>hard-light</option><option>soft-light</option><option>color-dodge</option><option>color-burn</option>
+    </select></div>
+<div class="grp"><label>COLOR</label><button class="sw sw-auto" data-color="">AUTO</button><button class="sw" data-color="#FFFFFF" style="background:#FFFFFF" title="#FFFFFF"></button><button class="sw" data-color="#0D0D0D" style="background:#0D0D0D" title="#0D0D0D"></button><button class="sw" data-color="#2D6CFF" style="background:#2D6CFF" title="#2D6CFF"></button><button class="sw" data-color="#FF5A5F" style="background:#FF5A5F" title="#FF5A5F"></button><button class="sw" data-color="#E8FF3A" style="background:#E8FF3A" title="#E8FF3A"></button><button class="sw" data-color="#1FBF75" style="background:#1FBF75" title="#1FBF75"></button><button class="sw" data-color="#FF2EA6" style="background:#FF2EA6" title="#FF2EA6"></button><button class="sw" data-color="#FF7A1A" style="background:#FF7A1A" title="#FF7A1A"></button><button class="sw" data-color="#8B5CF6" style="background:#8B5CF6" title="#8B5CF6"></button><button class="sw" data-color="#22D3EE" style="background:#22D3EE" title="#22D3EE"></button><button class="sw" data-color="#D4AF37" style="background:#D4AF37" title="#D4AF37"></button><button class="sw" data-color="#DC143C" style="background:#DC143C" title="#DC143C"></button><button class="sw" data-color="#8FF0A4" style="background:#8FF0A4" title="#8FF0A4"></button><button class="sw" data-color="#C4B5FD" style="background:#C4B5FD" title="#C4B5FD"></button><button class="sw" data-color="#14B8A6" style="background:#14B8A6" title="#14B8A6"></button><button class="sw" data-color="#FB7185" style="background:#FB7185" title="#FB7185"></button></div>
+  <div class="grp"><label>PRESET</label>
+    <select id="t-presets"><option value="">—</option></select>
+    <input id="t-pname" placeholder="name" style="width:84px;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;padding:.25rem">
+    <button id="t-save">SAVE</button><button id="t-del">DEL</button></div>
+</div>
+<div id="single_line" class="gallery active"></div><div id="topographic" class="gallery"></div><div id="constructivist" class="gallery"></div><div id="wireframe" class="gallery"></div><div id="mitate" class="gallery"></div><div id="classic-illustration" class="gallery"></div><div id="contemporary-fantasy-2025" class="gallery"></div><div id="photorealistic-sd35" class="gallery"></div>
+<div id="modal" class="modal"><button class="modal-close">CLOSE</button><div id="modal-host"></div></div>
+<script>
+const books={"1": {"title": "1984", "author": "George Orwell", "year": 1949, "font": "Archivo Black", "size": 46}, "2": {"title": "Midnight's Children", "author": "Salman Rushdie", "year": 1981, "font": "Rozha One", "size": 20}, "3": {"title": "The Catcher in the Rye", "author": "J.D. Salinger", "year": 1951, "font": "Oswald", "size": 20}, "4": {"title": "The Grapes of Wrath", "author": "John Steinbeck", "year": 1939, "font": "Archivo Black", "size": 20}, "5": {"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "year": 1925, "font": "Bodoni Moda", "size": 20}, "6": {"title": "Lolita", "author": "Vladimir Nabokov", "year": 1955, "font": "Bodoni Moda", "size": 34}, "7": {"title": "On the Road", "author": "Jack Kerouac", "year": 1957, "font": "Bebas Neue", "size": 26}, "8": {"title": "Ulysses", "author": "James Joyce", "year": 1922, "font": "Archivo Black", "size": 34}, "9": {"title": "Brave New World", "author": "Aldous Huxley", "year": 1932, "font": "Archivo Black", "size": 20}, "10": {"title": "Catch-22", "author": "Joseph Heller", "year": 1961, "font": "Anton", "size": 34}, "11": {"title": "Lord of the Flies", "author": "William Golding", "year": 1954, "font": "Archivo Black", "size": 20}, "12": {"title": "The Sound and the Fury", "author": "William Faulkner", "year": 1929, "font": "Fredericka the Great", "size": 20}, "13": {"title": "Under the Volcano", "author": "Malcolm Lowry", "year": 1947, "font": "Archivo Black", "size": 20}, "14": {"title": "The Adventures of Augie March", "author": "Saul Bellow", "year": 1953, "font": "Oswald", "size": 15}, "15": {"title": "All the King's Men", "author": "Robert Penn Warren", "year": 1946, "font": "Archivo Black", "size": 20}, "16": {"title": "Animal Farm", "author": "George Orwell", "year": 1945, "font": "Archivo Black", "size": 26}, "17": {"title": "The Big Sleep", "author": "Raymond Chandler", "year": 1939, "font": "Anton", "size": 26}, "18": {"title": "Brideshead Revisited", "author": "Evelyn Waugh", "year": 1945, "font": "Playfair Display", "size": 20}, "19": {"title": "A Clockwork Orange", "author": "Anthony Burgess", "year": 1962, "font": "Archivo Black", "size": 20}, "20": {"title": "The Golden Notebook", "author": "Doris Lessing", "year": 1962, "font": "Oswald", "size": 20}, "21": {"title": "Gone with the Wind", "author": "Margaret Mitchell", "year": 1936, "font": "Rozha One", "size": 20}, "22": {"title": "Invisible Man", "author": "Ralph Ellison", "year": 1952, "font": "Archivo Black", "size": 26}, "23": {"title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "year": 1954, "font": "Cinzel", "size": 20}, "24": {"title": "Middlemarch", "author": "George Eliot", "year": 1871, "font": "EB Garamond", "size": 26}, "25": {"title": "Mrs Dalloway", "author": "Virginia Woolf", "year": 1925, "font": "Playfair Display", "size": 26}, "26": {"title": "One Hundred Years of Solitude", "author": "Gabriel Garc\u00eda M\u00e1rquez", "year": 1967, "font": "Rozha One", "size": 15}, "27": {"title": "A Passage to India", "author": "E.M. Forster", "year": 1924, "font": "Playfair Display", "size": 20}, "28": {"title": "Portnoy's Complaint", "author": "Philip Roth", "year": 1969, "font": "Anton", "size": 20}, "29": {"title": "The Prime of Miss Jean Brodie", "author": "Muriel Spark", "year": 1961, "font": "Bodoni Moda", "size": 15}, "30": {"title": "The Sun Also Rises", "author": "Ernest Hemingway", "year": 1926, "font": "Oswald", "size": 20}, "31": {"title": "To Kill a Mockingbird", "author": "Harper Lee", "year": 1960, "font": "Oswald", "size": 20}, "32": {"title": "To the Lighthouse", "author": "Virginia Woolf", "year": 1927, "font": "Playfair Display", "size": 20}, "33": {"title": "Tropic of Cancer", "author": "Henry Miller", "year": 1934, "font": "Rozha One", "size": 20}, "34": {"title": "Wuthering Heights", "author": "Emily Bront\u00eb", "year": 1847, "font": "Fredericka the Great", "size": 20}, "35": {"title": "Adventures of Huckleberry Finn", "author": "Mark Twain", "year": 1884, "font": "Libre Caslon Display", "size": 15}, "36": {"title": "The Age of Innocence", "author": "Edith Wharton", "year": 1920, "font": "Bodoni Moda", "size": 20}, "37": {"title": "Alice's Adventures in Wonderland", "author": "Lewis Carroll", "year": 1865, "font": "Fredericka the Great", "size": 15}, "38": {"title": "An American Tragedy", "author": "Theodore Dreiser", "year": 1925, "font": "Archivo Black", "size": 20}, "39": {"title": "Anna Karenina", "author": "Leo Tolstoy", "year": 1878, "font": "Playfair Display", "size": 26}, "40": {"title": "Appointment in Samarra", "author": "John O'Hara", "year": 1934, "font": "Oswald", "size": 20}, "41": {"title": "As I Lay Dying", "author": "William Faulkner", "year": 1930, "font": "Fredericka the Great", "size": 26}, "42": {"title": "At Swim-Two-Birds", "author": "Flann O'Brien", "year": 1939, "font": "Major Mono Display", "size": 20}, "43": {"title": "Beloved", "author": "Toni Morrison", "year": 1987, "font": "Rozha One", "size": 34}, "44": {"title": "A Bend in the River", "author": "V.S. Naipaul", "year": 1979, "font": "Archivo Black", "size": 20}, "45": {"title": "The Bridge of San Luis Rey", "author": "Thornton Wilder", "year": 1927, "font": "Playfair Display", "size": 15}, "46": {"title": "The Call of the Wild", "author": "Jack London", "year": 1903, "font": "Anton", "size": 20}, "47": {"title": "Cold Comfort Farm", "author": "Stella Gibbons", "year": 1932, "font": "Fredericka the Great", "size": 20}, "48": {"title": "Crime and Punishment", "author": "Fyodor Dostoyevsky", "year": 1866, "font": "Archivo Black", "size": 20}, "49": {"title": "A Dance to the Music of Time", "author": "Anthony Powell", "year": 1951, "font": "Playfair Display", "size": 15}, "50": {"title": "David Copperfield", "author": "Charles Dickens", "year": 1850, "font": "Libre Caslon Display", "size": 20}, "51": {"title": "The Day of the Locust", "author": "Nathanael West", "year": 1939, "font": "Bodoni Moda", "size": 20}, "52": {"title": "Death Comes for the Archbishop", "author": "Willa Cather", "year": 1927, "font": "Libre Caslon Display", "size": 15}, "53": {"title": "The Death of the Heart", "author": "Elizabeth Bowen", "year": 1938, "font": "Playfair Display", "size": 20}, "54": {"title": "Deliverance", "author": "James Dickey", "year": 1970, "font": "Anton", "size": 26}, "55": {"title": "Emma", "author": "Jane Austen", "year": 1815, "font": "Playfair Display", "size": 46}, "56": {"title": "Ficciones", "author": "Jorge Luis Borges", "year": 1944, "font": "Major Mono Display", "size": 26}, "57": {"title": "Go Tell It on the Mountain", "author": "James Baldwin", "year": 1953, "font": "Archivo Black", "size": 15}, "58": {"title": "The Golden Bowl", "author": "Henry James", "year": 1904, "font": "Playfair Display", "size": 20}, "59": {"title": "The Good Soldier", "author": "Ford Madox Ford", "year": 1915, "font": "Bodoni Moda", "size": 20}, "60": {"title": "Great Expectations", "author": "Charles Dickens", "year": 1861, "font": "EB Garamond", "size": 20}, "61": {"title": "Gulliver's Travels", "author": "Jonathan Swift", "year": 1726, "font": "Bodoni Moda", "size": 20}, "62": {"title": "A Handful of Dust", "author": "Evelyn Waugh", "year": 1934, "font": "Bodoni Moda", "size": 20}, "63": {"title": "The Heart Is a Lonely Hunter", "author": "Carson McCullers", "year": 1940, "font": "Fredericka the Great", "size": 15}, "64": {"title": "Heart of Darkness", "author": "Joseph Conrad", "year": 1899, "font": "Archivo Black", "size": 20}, "65": {"title": "The Heart of the Matter", "author": "Graham Greene", "year": 1948, "font": "Playfair Display", "size": 15}, "66": {"title": "A House for Mr Biswas", "author": "V.S. Naipaul", "year": 1961, "font": "Archivo Black", "size": 20}, "67": {"title": "Housekeeping", "author": "Marilynne Robinson", "year": 1980, "font": "Fredericka the Great", "size": 26}, "68": {"title": "I, Claudius", "author": "Robert Graves", "year": 1934, "font": "Cinzel", "size": 26}, "69": {"title": "In Search of Lost Time", "author": "Marcel Proust", "year": 1913, "font": "Playfair Display", "size": 20}, "70": {"title": "Jane Eyre", "author": "Charlotte Bront\u00eb", "year": 1847, "font": "Fredericka the Great", "size": 26}, "71": {"title": "Journey to the End of the Night", "author": "Louis-Ferdinand C\u00e9line", "year": 1932, "font": "Archivo Black", "size": 15}, "72": {"title": "Kim", "author": "Rudyard Kipling", "year": 1901, "font": "Anton", "size": 46}, "73": {"title": "Light in August", "author": "William Faulkner", "year": 1932, "font": "Fredericka the Great", "size": 20}, "74": {"title": "The Lion, the Witch and the Wardrobe", "author": "C.S. Lewis", "year": 1950, "font": "Playfair Display", "size": 12}, "75": {"title": "Little Women", "author": "Louisa May Alcott", "year": 1868, "font": "Libre Caslon Display", "size": 26}, "76": {"title": "Lord Jim", "author": "Joseph Conrad", "year": 1900, "font": "Archivo Black", "size": 34}, "77": {"title": "Love in the Time of Cholera", "author": "Gabriel Garc\u00eda M\u00e1rquez", "year": 1985, "font": "Rozha One", "size": 15}, "78": {"title": "Loving", "author": "Henry Green", "year": 1945, "font": "Playfair Display", "size": 34}, "79": {"title": "The Magic Mountain", "author": "Thomas Mann", "year": 1924, "font": "Playfair Display", "size": 20}, "80": {"title": "The Magus", "author": "John Fowles", "year": 1965, "font": "Archivo Black", "size": 26}, "81": {"title": "The Maltese Falcon", "author": "Dashiell Hammett", "year": 1930, "font": "Oswald", "size": 20}, "82": {"title": "The Man Without Qualities", "author": "Robert Musil", "year": 1930, "font": "Archivo Black", "size": 15}, "83": {"title": "Moby-Dick", "author": "Herman Melville", "year": 1851, "font": "Cinzel", "size": 26}, "84": {"title": "Money", "author": "Martin Amis", "year": 1984, "font": "Bodoni Moda", "size": 34}, "85": {"title": "The Moviegoer", "author": "Walker Percy", "year": 1961, "font": "Oswald", "size": 26}, "86": {"title": "Native Son", "author": "Richard Wright", "year": 1940, "font": "Archivo Black", "size": 26}, "87": {"title": "Nostromo", "author": "Joseph Conrad", "year": 1904, "font": "Archivo Black", "size": 34}, "88": {"title": "Of Human Bondage", "author": "W. Somerset Maugham", "year": 1915, "font": "Playfair Display", "size": 20}, "89": {"title": "Pale Fire", "author": "Vladimir Nabokov", "year": 1962, "font": "Major Mono Display", "size": 26}, "90": {"title": "Pride and Prejudice", "author": "Jane Austen", "year": 1813, "font": "Playfair Display", "size": 20}, "91": {"title": "Ragtime", "author": "E.L. Doctorow", "year": 1975, "font": "Oswald", "size": 34}, "92": {"title": "The Rainbow", "author": "D.H. Lawrence", "year": 1915, "font": "Rozha One", "size": 26}, "93": {"title": "Scoop", "author": "Evelyn Waugh", "year": 1938, "font": "Bodoni Moda", "size": 34}, "94": {"title": "The Sheltering Sky", "author": "Paul Bowles", "year": 1949, "font": "Archivo Black", "size": 20}, "95": {"title": "Sister Carrie", "author": "Theodore Dreiser", "year": 1900, "font": "Oswald", "size": 26}, "96": {"title": "Slaughterhouse-Five", "author": "Kurt Vonnegut", "year": 1969, "font": "Anton", "size": 20}, "97": {"title": "Sons and Lovers", "author": "D.H. Lawrence", "year": 1913, "font": "Libre Caslon Display", "size": 20}, "98": {"title": "The Stranger", "author": "Albert Camus", "year": 1942, "font": "Archivo Black", "size": 26}, "99": {"title": "Things Fall Apart", "author": "Chinua Achebe", "year": 1958, "font": "Archivo Black", "size": 20}, "100": {"title": "The Trial", "author": "Franz Kafka", "year": 1925, "font": "Major Mono Display", "size": 26}};
+const IMG_BASE="https://rysvmrwyqxfoefnpcuwu.supabase.co/storage/v1/object/public/book-covers";
+function slug(t){return t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+function frameHTML(style,rank,b){
+  const rs=String(rank).padStart(3,"0");
+  const src=`${IMG_BASE}/${style}/${rs}_${slug(b.title)}.png`;
+  const foot=b.year?`${b.author} &middot; ${b.year}`:b.author;
+  return `<div class="frame"><img src="${src}" alt="${b.title}" onerror="this.style.opacity=.12">
+    <div class="overlay" style="font-family:'${b.font}',serif">
+      <div class="ov-main"><div class="ov-title" style="--book-size:${b.size}">${b.title}</div></div>
+      <div class="ov-foot">${foot}</div></div></div>`;
+}
+function render(style){
+  const c=document.getElementById(style); if(!c||c.dataset.done||style==="showcase")return; c.innerHTML="";
+  for(const [rank,b] of Object.entries(books)){
+    const d=document.createElement("div"); d.className="cover";
+    d.innerHTML=frameHTML(style,rank,b)+`<div class="cap"><b>#${String(rank).padStart(3,"0")}</b> ${b.title}</div>`;
+    d.onclick=()=>{document.getElementById("modal-host").innerHTML=frameHTML(style,rank,b).replace('class="frame"','class="modal-frame"');
+      document.getElementById("modal").classList.add("active");};
+    c.appendChild(d);
+  }
+  c.dataset.done="1";
+}
+document.querySelectorAll(".tab-button").forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll(".tab-button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".gallery").forEach(g=>g.classList.remove("active"));
+  btn.classList.add("active");
+  const s=btn.dataset.style; document.getElementById(s).classList.add("active"); render(s);
+});
+document.querySelector(".modal-close").onclick=()=>document.getElementById("modal").classList.remove("active");
+document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")document.getElementById("modal").classList.remove("active")};
+// typography controls -> CSS vars on :root, persisted
+const TKEY="typo-cfg";
+const tcfg=Object.assign({scale:1,lh:0.92,justify:"center",align:"left",blend:"difference",color:""},JSON.parse(localStorage.getItem(TKEY)||"{}"));
+const DARK_BLENDS=["multiply","darken","color-burn"];   // white text vanishes on these -> use black
+function applyTypo(){
+  const r=document.documentElement.style;
+  r.setProperty("--t-scale",tcfg.scale); r.setProperty("--t-lh",tcfg.lh);
+  r.setProperty("--t-justify",tcfg.justify); r.setProperty("--t-align",tcfg.align); r.setProperty("--t-blend",tcfg.blend);
+  const auto=DARK_BLENDS.includes(tcfg.blend)?"#000":"#fff";
+  r.setProperty("--t-color", tcfg.color || auto);          // explicit swatch overrides blend-auto
+  document.querySelectorAll(".typo-bar button[data-k]").forEach(b=>b.classList.toggle("on",tcfg[b.dataset.k]===b.dataset.v));
+  document.querySelectorAll(".typo-bar .sw").forEach(b=>b.classList.toggle("on",(b.dataset.color||"")===tcfg.color));
+  document.getElementById("t-size").value=tcfg.scale; document.getElementById("t-lh").value=tcfg.lh;
+  document.getElementById("t-blend").value=tcfg.blend;
+  localStorage.setItem(TKEY,JSON.stringify(tcfg));
+}
+document.querySelectorAll(".typo-bar button[data-k]").forEach(b=>b.onclick=()=>{tcfg[b.dataset.k]=b.dataset.v;applyTypo();});
+document.querySelectorAll(".typo-bar .sw").forEach(b=>b.onclick=()=>{tcfg.color=b.dataset.color||"";applyTypo();});
+document.getElementById("t-size").oninput=e=>{tcfg.scale=parseFloat(e.target.value);applyTypo();};
+document.getElementById("t-lh").oninput=e=>{tcfg.lh=parseFloat(e.target.value);applyTypo();};
+document.getElementById("t-blend").onchange=e=>{tcfg.blend=e.target.value;applyTypo();};
+// presets — save/load/delete the full type config, persisted
+const PKEY="typo-presets";
+let presets=JSON.parse(localStorage.getItem(PKEY)||"{}");
+function refreshPresets(sel){const s=document.getElementById("t-presets");
+  s.innerHTML='<option value="">—</option>'+Object.keys(presets).sort().map(n=>`<option ${n===sel?"selected":""}>${n}</option>`).join("");}
+document.getElementById("t-save").onclick=()=>{const i=document.getElementById("t-pname");const n=i.value.trim();
+  if(!n)return; presets[n]={...tcfg}; localStorage.setItem(PKEY,JSON.stringify(presets)); refreshPresets(n); i.value="";};
+document.getElementById("t-presets").onchange=e=>{const n=e.target.value; if(presets[n]){Object.assign(tcfg,presets[n]);applyTypo();refreshPresets(n);}};
+document.getElementById("t-del").onclick=()=>{const n=document.getElementById("t-presets").value;
+  if(n&&presets[n]){delete presets[n];localStorage.setItem(PKEY,JSON.stringify(presets));refreshPresets();}};
+refreshPresets();
+applyTypo();
+render("single_line");
+</script></body></html>
